@@ -1192,7 +1192,32 @@ print_file_data_base (void)
   fputs (_("\n# files hash-table stats:\n# "), stdout);
   hash_print_stats (&files, stdout);
 }
-
+
+static void
+print_file_targets (const void *item)
+{
+  const struct file *f = item;
+
+  /* If we're not using builtin targets, don't show them.
+
+     Ideally we'd be able to delete them altogether but currently there's no
+     facility to ever delete a file once it's been added.  */
+  if (no_builtin_rules_flag && f->builtin)
+    return;
+
+  if (f->is_target)
+    printf ("%s\n", f->name);
+
+  if (f->prev)
+    print_file ((const void *) f->prev);
+}
+
+void
+print_all_targets (void)
+{
+  hash_map (&files, print_file_targets);
+}
+
 /* Verify the integrity of the data base of files.  */
 
 #define VERIFY_CACHED(_p,_n) \

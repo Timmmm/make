@@ -172,6 +172,11 @@ int ignore_errors_flag = 0;
 
 int print_data_base_flag = 0;
 
+/* Nonzero means don't remake anything, just print the targets
+   that results from reading the makefile (-l).  */
+
+int print_all_targets_flag = 0;
+
 /* Nonzero means don't remake anything; just return a nonzero status
    if the specified targets are not up to date (-q).  */
 
@@ -462,6 +467,7 @@ static struct command_switch switches[] =
     { 'i', flag, &ignore_errors_flag, 1, 1, 0, 0, 0, 0, "ignore-errors", 0 },
     { 'k', flag, &keep_going_flag, 1, 1, 0, 0, 0, &default_keep_going_flag,
       "keep-going", &keep_going_origin },
+    { 'l', flag, &print_all_targets_flag, 1, 1, 0, 0, 0, 0, "print-targets", 0 },
     { 'L', flag, &check_symlink_flag, 1, 1, 0, 0, 0, 0, "check-symlink-times", 0 },
     { 'm', ignore, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 'n', flag, &just_print_flag, 1, 1, 1, 0, 0, 0, "just-print", 0 },
@@ -2306,6 +2312,12 @@ main (int argc, char **argv, char **envp)
 
   OUTPUT_UNSET ();
   output_close (&make_sync);
+
+  if (print_all_targets_flag)
+    {
+      print_all_targets ();
+      die (EXIT_SUCCESS);
+    }
 
   if (shuffle_mode)
     DB (DB_BASIC, (_("Enabled shuffle mode: %s\n"), shuffle_mode));
